@@ -30,6 +30,8 @@ var services = builder.Services;
 
 services.AddTransient<IRandomWeatherForecaster, RandomWeatherForecaster>();
 
+services.Configure<FeatureConfiguration>(builder.Configuration.GetSection("Features"));
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(options =>
 {

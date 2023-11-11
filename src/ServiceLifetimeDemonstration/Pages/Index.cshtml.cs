@@ -2,23 +2,25 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace ServiceLifetimeDemonstration.Pages
 {
-    public class IndexModel : PageModel
-    {
-        private readonly ILogger<IndexModel> _logger;
+	public class IndexModel : PageModel
+	{
+		private readonly ILogger<IndexModel> _logger;
 		private readonly IGuidService _guidService;
+		private readonly DisposableService _disposableService;
 
-		public IndexModel(ILogger<IndexModel> logger, IGuidService guidService)
-        {
-            _logger = logger;
+		public IndexModel(ILogger<IndexModel> logger, IGuidService guidService, DisposableService disposableService)
+		{
+			_logger = logger;
 			_guidService = guidService;
+			_disposableService = disposableService;
 		}
 
 		public string Guid { get; private set; } = "Missing";
 
 		public string GuidFromMiddleware { get; private set; } = "Missing";
 
-        public void OnGet()
-        {
+		public void OnGet()
+		{
 			var guid = _guidService.GetGuid();
 
 			Guid = guid;
@@ -32,5 +34,5 @@ namespace ServiceLifetimeDemonstration.Pages
 			_logger.LogInformation($"Controller: The GUID from the " +
 				$"GuidService is {guid}");
 		}
-    }
+	}
 }
