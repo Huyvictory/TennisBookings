@@ -23,13 +23,38 @@ global using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
 using TennisBookings.BackgroundService;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 
-services.AddTransient<IRandomWeatherForecaster, RandomWeatherForecaster>();
 
+services.TryAddSingleton<IRandomWeatherForecaster, AmazingWeatherForeCaster>();
+services.TryAddSingleton<IRandomWeatherForecaster, RandomWeatherForecaster>();
+//services.Replace(ServiceDescriptor.Singleton<IRandomWeatherForecaster, RandomWeatherForecaster>());
+//services.RemoveAll<IRandomWeatherForecaster>();
+
+services.TryAddScoped<ICourtBookingService, CourtBookingService>();
+services.TryAddSingleton<IUtcTimeService, TimeService>();
+
+services.TryAddScoped<IBookingService, BookingService>();
+services.TryAddScoped<ICourtService, CourtService>();
+
+services.TryAddScoped<ICourtBookingManager, CourtBookingManager>();
+services.TryAddScoped<IBookingRuleProcessor, BookingRuleProcessor>();
+services.Configure<BookingConfiguration>(builder.Configuration.GetSection("CourtBookings"));
+services.TryAddSingleton<INotificationService, EmailNotificationService>();
+
+services.AddSingleton<ICourtBookingRule, ClubIsOpenRule>();
+services.AddSingleton<ICourtBookingRule, MaxBookingLengthRule>();
+services.AddSingleton<ICourtBookingRule, MaxPeakTimeBookingLengthRule>();
+services.AddScoped<ICourtBookingRule, MemberBookingsMustNotOverlapRule>();
+services.AddScoped<ICourtBookingRule, MemberCourtBookingsMaxHoursPerDayRule>();
+services.AddScoped<ICourtBookingRule, BookingDateFromFutureRule>();
+
+services.Configure<ClubConfiguration>(builder.Configuration.GetSection("ClubSettings"));
+services.Configure<BookingConfiguration>(builder.Configuration.GetSection("CourtBookings"));
 services.Configure<FeatureConfiguration>(builder.Configuration.GetSection("Features"));
 
 builder.Services.AddControllersWithViews();

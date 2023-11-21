@@ -1,4 +1,4 @@
-﻿namespace TennisBookings.Services.Time
+namespace TennisBookings.Services.Time
 {
 	public interface IUtcTimeService
 	{

@@ -1,4 +1,4 @@
-﻿namespace TennisBookings.Services.Unavailability
+namespace TennisBookings.Services.Unavailability
 {
 	public class CourtBookingUnavailabilityProvider : IUnavailabilityProvider
     {
