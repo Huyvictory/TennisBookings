@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
+using TennisBookings.Services.Membership;
 
 namespace TennisBookings.Pages
 {
@@ -8,12 +9,16 @@ namespace TennisBookings.Pages
 		private readonly IRandomWeatherForecaster _weatherForecaster;
 		private readonly ILogger<IndexModel> _logger;
 		private readonly FeatureConfiguration _featureConfiguration;
+		public readonly IMembershipAdvert Advert;
+		private readonly IHomePageGreetingService _greetingService;
 
-		public IndexModel(IRandomWeatherForecaster weatherForecaster, ILogger<IndexModel> logger, IOptionsSnapshot<FeatureConfiguration> options)
+		public IndexModel(IRandomWeatherForecaster weatherForecaster, ILogger<IndexModel> logger, IOptionsSnapshot<FeatureConfiguration> options, IMembershipAdvert advert, ILoggedInUserGreetingService greetingService)
 		{
 			_weatherForecaster = weatherForecaster;
 			_logger = logger;
 			_featureConfiguration = options.Value;
+			Advert = advert;
+			_greetingService = (IHomePageGreetingService?)greetingService;
 		}
 
 		public string WeatherDescription { get; private set; } =
@@ -21,8 +26,8 @@ namespace TennisBookings.Pages
 			"please check again later.";
 
 		public bool ShowWeatherForecast { get; private set; }
-		public bool ShowGreeting => false;
-		public string Greeting => "Welcome to Tennis by the Sea";
+		public bool ShowGreeting => true;
+		public string Greeting => _greetingService.GetRandomHomePageGreeting();
 
 		public async Task OnGet()
 		{

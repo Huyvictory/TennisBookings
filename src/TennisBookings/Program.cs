@@ -24,38 +24,43 @@ using Microsoft.Data.Sqlite;
 using TennisBookings.BackgroundService;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+using TennisBookings.Services.Membership;
+using TennisBookings.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 
 
-services.TryAddSingleton<IRandomWeatherForecaster, AmazingWeatherForeCaster>();
-services.TryAddSingleton<IRandomWeatherForecaster, RandomWeatherForecaster>();
-//services.Replace(ServiceDescriptor.Singleton<IRandomWeatherForecaster, RandomWeatherForecaster>());
-//services.RemoveAll<IRandomWeatherForecaster>();
+services.WeatherForcastingServices();
 
-services.TryAddScoped<ICourtBookingService, CourtBookingService>();
-services.TryAddSingleton<IUtcTimeService, TimeService>();
+services.BookingCourtServices();
 
-services.TryAddScoped<IBookingService, BookingService>();
-services.TryAddScoped<ICourtService, CourtService>();
+services.AddBookingRules();
 
-services.TryAddScoped<ICourtBookingManager, CourtBookingManager>();
-services.TryAddScoped<IBookingRuleProcessor, BookingRuleProcessor>();
+services.UnavailabilityServices();
+
+services.AddTransient<IMembershipAdvertBuilder, MembershipAdvertBuilder>();
+services.AddSingleton<IMembershipAdvert>(sp =>
+{
+	var builder = sp.GetRequiredService<IMembershipAdvertBuilder>();
+	builder.WithDiscount(10m);
+	var advert = builder.Build();
+	return advert;
+});
+
+services.GreetingServices();
+
+services.CacheServices();
+
 services.Configure<BookingConfiguration>(builder.Configuration.GetSection("CourtBookings"));
-services.TryAddSingleton<INotificationService, EmailNotificationService>();
-
-services.AddSingleton<ICourtBookingRule, ClubIsOpenRule>();
-services.AddSingleton<ICourtBookingRule, MaxBookingLengthRule>();
-services.AddSingleton<ICourtBookingRule, MaxPeakTimeBookingLengthRule>();
-services.AddScoped<ICourtBookingRule, MemberBookingsMustNotOverlapRule>();
-services.AddScoped<ICourtBookingRule, MemberCourtBookingsMaxHoursPerDayRule>();
-services.AddScoped<ICourtBookingRule, BookingDateFromFutureRule>();
-
 services.Configure<ClubConfiguration>(builder.Configuration.GetSection("ClubSettings"));
 services.Configure<BookingConfiguration>(builder.Configuration.GetSection("CourtBookings"));
 services.Configure<FeatureConfiguration>(builder.Configuration.GetSection("Features"));
+services.Configure<MembershipConfiguration>(builder.Configuration.GetSection("Membership"));
+
+services.TryAddSingleton<IBookingConfiguration>(sp => sp.GetRequiredService<IOptions<BookingConfiguration>>().Value);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(options =>
