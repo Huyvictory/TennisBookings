@@ -27,6 +27,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using TennisBookings.Services.Membership;
 using TennisBookings.DependencyInjection;
+using TennisBookings.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,6 +55,8 @@ services.GreetingServices();
 
 services.CacheServices();
 
+services.AddScoped<ICourtMaintenanceService, CourtMaintenanceService>();
+
 services.Configure<BookingConfiguration>(builder.Configuration.GetSection("CourtBookings"));
 services.Configure<ClubConfiguration>(builder.Configuration.GetSection("ClubSettings"));
 services.Configure<BookingConfiguration>(builder.Configuration.GetSection("CourtBookings"));
@@ -61,6 +64,8 @@ services.Configure<FeatureConfiguration>(builder.Configuration.GetSection("Featu
 services.Configure<MembershipConfiguration>(builder.Configuration.GetSection("Membership"));
 
 services.TryAddSingleton<IBookingConfiguration>(sp => sp.GetRequiredService<IOptions<BookingConfiguration>>().Value);
+
+services.TryAddScoped<LastRequestMiddlewareFactory>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(options =>
@@ -113,6 +118,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<LastRequestMiddleware>();
 
 app.MapControllerRoute(
 	name: "default",

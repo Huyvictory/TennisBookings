@@ -12,7 +12,6 @@ public class CourtsController : Controller
 {
 	private readonly ICourtBookingService _courtBookingService;
 	private readonly IUtcTimeService _utcTimeService;
-	private readonly ICourtMaintenanceService _courtMaintenanceService;
 
 	public CourtsController(
 		ICourtBookingService courtBookingService,
@@ -21,13 +20,13 @@ public class CourtsController : Controller
 	{
 		_courtBookingService = courtBookingService;
 		_utcTimeService = utcTimeService;
-		_courtMaintenanceService = courtMaintenanceService;
 	}
 
 	[Route("Maintenance/Upcoming")]
-	public async Task<ActionResult> UpcomingMaintenance()
+	public async Task<ActionResult> UpcomingMaintenance(
+		[FromServices] ICourtMaintenanceService courtMaintenanceService)
 	{
-		var maintenanceSchedules = await _courtMaintenanceService.GetUpcomingMaintenance();
+		var maintenanceSchedules = await courtMaintenanceService.GetUpcomingMaintenance();
 
 		var maintenanceViewModels = maintenanceSchedules.Select(x => new CourtMaintenanceViewModel
 		{
