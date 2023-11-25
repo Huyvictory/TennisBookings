@@ -1,5 +1,6 @@
 @page
 @model FindAvailableCourtsModel
+@inject IBookingConfiguration BookConfig
 @{
     ViewData["Title"] = "Find Available Courts";
 }
@@ -8,7 +9,11 @@
 
 <div class="row">
     <div class="col-md-12">
-        <p>Please choose the date for your booking:<br /></p>
+        <p>
+            The maximum length of time for a booking is
+            @BookConfig.MaxRegularBookingLengthInHours hours
+            (@BookConfig.MaxPeakBookingLengthInHours hours at peak times).
+        </p>
         <form method="POST">
             <div class="col-md-6">
                 <label asp-for="SearchDate" class="control-label"></label>
