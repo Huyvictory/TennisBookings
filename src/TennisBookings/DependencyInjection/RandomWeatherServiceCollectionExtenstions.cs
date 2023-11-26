@@ -6,8 +6,9 @@ namespace TennisBookings.DependencyInjection
 	{
 		public static IServiceCollection WeatherForcastingServices(this IServiceCollection services)
 		{
-			services.TryAddSingleton<IRandomWeatherForecaster, AmazingWeatherForeCaster>();
-			services.TryAddSingleton<IRandomWeatherForecaster, RandomWeatherForecaster>();
+			//services.TryAddSingleton<IRandomWeatherForecaster, AmazingWeatherForeCaster>();
+			//services.TryAddSingleton<IRandomWeatherForecaster, RandomWeatherForecaster>();
+			//services.Decorate<IRandomWeatherForecaster, CachedWeatherForecaster>();
 			//services.Replace(ServiceDescriptor.Singleton<IRandomWeatherForecaster, RandomWeatherForecaster>());
 			//services.RemoveAll<IRandomWeatherForecaster>();
 

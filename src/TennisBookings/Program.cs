@@ -28,13 +28,23 @@ using Microsoft.Extensions.Options;
 using TennisBookings.Services.Membership;
 using TennisBookings.DependencyInjection;
 using TennisBookings.Middleware;
+using Autofac.Extensions.DependencyInjection;
+using Autofac;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
 var services = builder.Services;
 
 
 services.WeatherForcastingServices();
+builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
+{
+	builder.RegisterType<RandomWeatherForecaster>()
+	.As<IRandomWeatherForecaster>()
+	.SingleInstance();
+	builder.RegisterDecorator<CachedWeatherForecaster, IRandomWeatherForecaster>();
+});
 
 services.BookingCourtServices();
 
